@@ -3,6 +3,7 @@ import { open } from "sqlite";
 import path from 'path';
 
 export const initDatabase = () => {
+  console.log('db initilise.......');
   return open({
     filename: path.resolve(__dirname, '../database.db'),
     driver: sqlite3.Database

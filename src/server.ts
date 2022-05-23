@@ -1,3 +1,4 @@
+import 'graphql-import-node';
 import express from "express";
 import {
   getGraphQLParameters,
@@ -5,9 +6,9 @@ import {
   renderGraphiQL,
   shouldRenderGraphiQL
 } from "graphql-helix";
-import { schema } from "./schema";
-import { initDatabase } from "./database";
 
+import { initDatabase } from "./database";
+import { schema } from "./schema";
 export const server = express();
 
 server.use(express.json());
