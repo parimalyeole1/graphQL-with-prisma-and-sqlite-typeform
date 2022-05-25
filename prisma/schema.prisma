@@ -8,24 +8,24 @@ datasource db {
 }
 
 // start:For this test only working with Album and Artist table >>>>>
-model albums {
+model Albums {
   albumId  Int      @id @default(autoincrement())
   title    String
   artistId Int
-  artists  artists  @relation(fields: [artistId], references: [artistId], onDelete: NoAction, onUpdate: NoAction)
+  artists  Artists  @relation(fields: [artistId], references: [artistId], onDelete: NoAction, onUpdate: NoAction)
   tracks   tracks[]
 
   @@index([artistId], map: "IFK_AlbumArtistId")
 }
 
-model artists {
+model Artists {
   artistId Int      @id @default(autoincrement())
   name     String
-  albums   albums[]
+  albums   Albums[]
 }
 // <<<< end:For this test only working with Album and Artist table
 
-model customers {
+model Customers {
   customerId   Int        @id @default(autoincrement())
   firstName    String
   lastName     String
@@ -39,13 +39,13 @@ model customers {
   fax          String?
   email        String
   supportRepId Int?
-  employees    employees? @relation(fields: [supportRepId], references: [employeeId], onDelete: NoAction, onUpdate: NoAction)
-  invoices     invoices[]
+  employees    Employees? @relation(fields: [supportRepId], references: [employeeId], onDelete: NoAction, onUpdate: NoAction)
+  invoices     Invoices[]
 
   @@index([supportRepId], map: "IFK_CustomerSupportRepId")
 }
 
-model employees {
+model Employees {
   employeeId      Int         @id @default(autoincrement())
   lastName        String
   firstName       String
@@ -61,9 +61,9 @@ model employees {
   phone           String?
   fax             String?
   email           String?
-  employees       employees?  @relation("employeesToemployees_ReportsTo", fields: [reportsTo], references: [employeeId], onDelete: NoAction, onUpdate: NoAction)
-  customers       customers[]
-  other_employees employees[] @relation("employeesToemployees_ReportsTo")
+  employees       Employees?  @relation("employeesToemployees_ReportsTo", fields: [reportsTo], references: [employeeId], onDelete: NoAction, onUpdate: NoAction)
+  customers       Customers[]
+  other_employees Employees[] @relation("employeesToemployees_ReportsTo")
 
   @@index([reportsTo], map: "IFK_EmployeeReportsTo")
 }
@@ -74,20 +74,20 @@ model genres {
   tracks  tracks[]
 }
 
-model invoice_items {
+model InvoiceItems {
   invoiceLineId Int      @id @default(autoincrement())
   invoiceId     Int
   trackId       Int
   unitPrice     Decimal
   quantity      Int
-  invoices      invoices @relation(fields: [invoiceId], references: [invoiceId], onDelete: NoAction, onUpdate: NoAction)
+  invoices      Invoices @relation(fields: [invoiceId], references: [invoiceId], onDelete: NoAction, onUpdate: NoAction)
   tracks        tracks   @relation(fields: [trackId], references: [trackId], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([trackId], map: "IFK_InvoiceLineTrackId")
   @@index([invoiceId], map: "IFK_InvoiceLineInvoiceId")
 }
 
-model invoices {
+model Invoices {
   invoiceId         Int             @id @default(autoincrement())
   customerId        Int
   invoiceDate       DateTime
@@ -97,32 +97,32 @@ model invoices {
   billingCountry    String?
   billingPostalCode String?
   total             Decimal
-  customers         customers       @relation(fields: [customerId], references: [customerId], onDelete: NoAction, onUpdate: NoAction)
-  invoice_items     invoice_items[]
+  customers         Customers       @relation(fields: [customerId], references: [customerId], onDelete: NoAction, onUpdate: NoAction)
+  invoice_items     InvoiceItems[]
 
   @@index([customerId], map: "IFK_InvoiceCustomerId")
 }
 
-model media_types {
+model MediaTypes {
   mediaTypeId Int      @id @default(autoincrement())
   name        String?
   tracks      tracks[]
 }
 
-model playlist_track {
+model PlaylistTrack {
   playlistId Int
   trackId    Int
-  playlists  playlists @relation(fields: [playlistId], references: [playlistId], onDelete: NoAction, onUpdate: NoAction)
+  playlists  Playlists @relation(fields: [playlistId], references: [playlistId], onDelete: NoAction, onUpdate: NoAction)
   tracks     tracks    @relation(fields: [trackId], references: [trackId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([playlistId, trackId])
   @@index([trackId], map: "IFK_PlaylistTrackTrackId")
 }
 
-model playlists {
+model Playlists {
   playlistId     Int              @id @default(autoincrement())
   name           String?
-  playlist_track playlist_track[]
+  playlist_track PlaylistTrack[]
 }
 
 model tracks {
@@ -135,11 +135,11 @@ model tracks {
   milliseconds   Int
   bytes          Int?
   unitPrice      Decimal
-  albums         albums?          @relation(fields: [albumId], references: [albumId], onDelete: NoAction, onUpdate: NoAction)
+  albums         Albums?          @relation(fields: [albumId], references: [albumId], onDelete: NoAction, onUpdate: NoAction)
   genres         genres?          @relation(fields: [genreId], references: [genreId], onDelete: NoAction, onUpdate: NoAction)
-  media_types    media_types      @relation(fields: [mediaTypeId], references: [mediaTypeId], onDelete: NoAction, onUpdate: NoAction)
-  invoice_items  invoice_items[]
-  playlist_track playlist_track[]
+  media_types    MediaTypes      @relation(fields: [mediaTypeId], references: [mediaTypeId], onDelete: NoAction, onUpdate: NoAction)
+  invoice_items  InvoiceItems[]
+  playlist_track PlaylistTrack[]
 
   @@index([mediaTypeId], map: "IFK_TrackMediaTypeId")
   @@index([genreId], map: "IFK_TrackGenreId")

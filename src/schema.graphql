@@ -1,23 +1,22 @@
 type Query {
-  info: String!
-  artist: [Artist!]!
+  artists: [Artist!]!
 }
 
 type Mutation {
-  artist(Name: String!): Artist!
+  updateArtist(name: String!): Artist!
 }
 
 # type Subscription {
 # }
 
 type Artist {
-  ArtistId: ID!
-  Name: String!
+  artistId: ID!
+  name: String!
   albums: [Album!]!
 }
 
 type Album {
-  AlbumId: ID!
-  Title: String!
-  ArtistId: ID!
+  albumId: ID!
+  title: String!
+  artistId: ID!
 }

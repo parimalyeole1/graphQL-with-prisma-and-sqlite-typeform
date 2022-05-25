@@ -1,44 +1,38 @@
 import "graphql-import-node";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./schema.graphql";
-
-type Artist = {
-  ArtistId: number;
-  Name: string;
-}
-
-// 2
-const artistsTable: Artist[] = [{
-  ArtistId: 1,
-  Name: 'Shankar Mahadevan'
-}]
+import { Artists } from "@prisma/client";
+import { GraphQLContext } from "./context";
 
 const resolvers = {
   Artist: {
-    ArtistId: (parent: Artist) => parent.ArtistId,
-    Name: (parent: Artist) => parent.Name,
+    artistId: (parent: Artists) => parent.artistId,
+    name: (parent: Artists) => parent.name,
+    albums: (parent: Artists, _args: {}, context: GraphQLContext) =>
+      context.prisma.artists
+        .findUnique({ where: { artistId: parent.artistId } })
+        .albums(),
   },
   Query: {
-    info: () => 'Test',
-    artist: () => artistsTable
-  },
-  Mutation : {
-    artist: (_parent: unknown, args: { Name: string }) => {
-      // 1
-      let idCount = artistsTable.length;
-
-      // 2
-      const artist: Artist = {
-        ArtistId: idCount+ 1,
-        Name: args.Name
-      };
-
-      artistsTable.push(artist);
-
-      return artist;
+    artists: async (_parent: unknown, _args: {}, context: GraphQLContext) => {
+      return context.prisma.artists.findMany();
     },
-  }
-}
+  },
+  Mutation: {
+    updateArtist: (
+      _parent: unknown,
+      args: { name: string },
+      context: GraphQLContext
+    ) => {
+      const newArtist = context.prisma.artists.create({
+        data: {
+          name: args.name,
+        },
+      });
+      return newArtist;
+    },
+  },
+};
 
 export const schema = makeExecutableSchema({
   typeDefs,

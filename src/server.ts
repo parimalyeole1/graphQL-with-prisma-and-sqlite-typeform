@@ -6,8 +6,8 @@ import {
   renderGraphiQL,
   shouldRenderGraphiQL
 } from "graphql-helix";
-
-import { initDatabase } from "./database";
+import { contextFactory } from "./context";
+// import { initDatabase } from "./database";
 import { schema } from "./schema";
 export const server = express();
 
@@ -32,9 +32,7 @@ server.use("/", async (req, res) => {
       variables,
       request,
       schema,
-      contextFactory: async () => ({
-        db: await initDatabase()
-      })
+      contextFactory
     });
 
     if (result.type === "RESPONSE") {
