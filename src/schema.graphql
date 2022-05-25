@@ -5,10 +5,11 @@ type Query {
     take: Int
     orderBy: ArtistOrderByInput
   ): ArtistList!
+  artist(artistId: ID!): Artist
 }
 
 type Mutation {
-  updateArtist(name: String!): Artist!
+  updateArtist(artistId: ID!, name: String!): Artist!
 }
 
 # type Subscription {

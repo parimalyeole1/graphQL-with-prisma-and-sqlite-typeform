@@ -27,35 +27,49 @@ const resolvers = {
       context: GraphQLContext
     ) => {
       const where = args.filter
-      ? {
-          OR: [
-            { name: { contains: args.filter } },
-          ],
-        }
-      : {};
-    const totalCount = await context.prisma.artists.count({ where });
-    const artists = await context.prisma.artists.findMany({
-      where,
-      skip: args.skip || 0,
-      take: args.take || 20,
-      orderBy: args.orderBy,
-    });
-    return {
-      count: totalCount,
-      artists,
-    }
+        ? {
+            OR: [{ name: { contains: args.filter } }],
+          }
+        : {};
+      const totalCount = await context.prisma.artists.count({ where });
+      const artists = await context.prisma.artists.findMany({
+        where,
+        skip: args.skip || 0,
+        take: args.take || 20,
+        orderBy: args.orderBy,
+      });
+      return {
+        count: totalCount,
+        artists,
+      };
+    },
+    artist: async (
+      _parent: unknown,
+      args: Pick<Artists, "artistId">,
+      context: GraphQLContext
+    ) => {
+      const artist = await context.prisma.artists.findFirst({
+        where: {
+          artistId: parseInt(args.artistId.toString()),
+        },
+      });
+      return artist
     },
   },
   Mutation: {
-    updateArtist: (
+    updateArtist: async (
       _parent: unknown,
-      args: { name: string },
+      args: Pick<Artists, "artistId" | "name">,
       context: GraphQLContext
     ) => {
-      const newArtist = context.prisma.artists.create({
-        data: {
-          name: args.name,
-        },
+      const { artistId, name } = args;
+      const artistResult = await context.prisma.artists.findUnique({where: {artistId:parseInt(artistId.toString())}})
+      if(!artistResult){
+        throw new Error(`Artist with artistId:${artistId} not found!`)
+      }
+      const newArtist = await context.prisma.artists.update({
+        where: { artistId: parseInt(artistId.toString()) },
+        data: { name: name },
       });
       return newArtist;
     },
