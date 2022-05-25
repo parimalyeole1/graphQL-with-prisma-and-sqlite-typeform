@@ -37,8 +37,8 @@ const resolvers = {
       const totalCount = await context.prisma.artists.count({ where });
       const artists = await context.prisma.artists.findMany({
         where,
-        skip: args.skip || 0,
-        take: args.take || 20,
+        skip: args.skip,
+        take: args.take,
         orderBy: args.orderBy,
       });
       return {

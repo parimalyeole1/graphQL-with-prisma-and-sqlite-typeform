@@ -4,6 +4,9 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "prisma": "prisma",
+    "create:prisma:client": "prisma generate",
+    "start:prisma:studio": "prisma studio",
     "dev": "ts-node-dev --exit-child src/index.ts",
     "start": "ts-node src/index.ts"
   },
