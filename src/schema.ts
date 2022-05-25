@@ -3,6 +3,9 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./schema.graphql";
 import { Artists, Prisma } from "@prisma/client";
 import { GraphQLContext } from "./context";
+import { Channels } from "./pubsub";
+import { withFilter } from "graphql-subscriptions";
+import { getInt } from "./utils";
 
 const resolvers = {
   Artist: {
@@ -50,10 +53,10 @@ const resolvers = {
     ) => {
       const artist = await context.prisma.artists.findFirst({
         where: {
-          artistId: parseInt(args.artistId.toString()),
+          artistId: getInt(args.artistId)
         },
       });
-      return artist
+      return artist;
     },
   },
   Mutation: {
@@ -63,15 +66,35 @@ const resolvers = {
       context: GraphQLContext
     ) => {
       const { artistId, name } = args;
-      const artistResult = await context.prisma.artists.findUnique({where: {artistId:parseInt(artistId.toString())}})
-      if(!artistResult){
-        throw new Error(`Artist with artistId:${artistId} not found!`)
+      const artistResult = await context.prisma.artists.findUnique({
+        where: { artistId: getInt(artistId) },
+      });
+      if (!artistResult) {
+        throw new Error(`Artist with artistId:${artistId} not found!`);
       }
       const newArtist = await context.prisma.artists.update({
-        where: { artistId: parseInt(artistId.toString()) },
+        where: { artistId: getInt(artistId) },
         data: { name: name },
       });
+      context.pubSub.publish("ARTIST_UPDATED", { updatedArtist: newArtist });
       return newArtist;
+    },
+  },
+  Subscription: {
+    listenToArtist: {
+      subscribe: withFilter(
+        (_parent: unknown, _args: {}, context: GraphQLContext) =>
+          context.pubSub.asyncIterator("ARTIST_UPDATED"),
+        (payload: { updatedArtist: Artists }, variables) => {
+          return (
+            getInt(payload.updatedArtist.artistId) ===
+            getInt(variables.artistId)
+          );
+        }
+      ),
+      resolve: (payload: Channels["ARTIST_UPDATED"][0]) => {
+        return payload.updatedArtist;
+      },
     },
   },
 };

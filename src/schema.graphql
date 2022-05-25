@@ -12,8 +12,10 @@ type Mutation {
   updateArtist(artistId: ID!, name: String!): Artist!
 }
 
-# type Subscription {
-# }
+type Subscription {
+  listenToArtist(artistId: ID!): Artist!
+  # listenToArtist: Artist!
+}
 
 type Artist {
   artistId: ID!

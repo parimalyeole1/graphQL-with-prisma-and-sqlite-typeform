@@ -1,0 +1,1 @@
+export const getInt = (val: string | number): number => parseInt(val.toString())
