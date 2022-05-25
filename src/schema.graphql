@@ -1,5 +1,10 @@
 type Query {
-  artists: [Artist!]!
+  artistList(
+    filter: String
+    skip: Int
+    take: Int
+    orderBy: ArtistOrderByInput
+  ): ArtistList!
 }
 
 type Mutation {
@@ -19,4 +24,19 @@ type Album {
   albumId: ID!
   title: String!
   artistId: ID!
+}
+
+input ArtistOrderByInput {
+  name: Sort
+}
+
+enum Sort {
+  asc
+  desc
+}
+
+
+type ArtistList {
+  artists: [Artist!]!
+  count: Int!
 }
