@@ -8,8 +8,6 @@ export type GraphQLContext = {
 };
 
 export async function contextFactory(): Promise<GraphQLContext> {
-  console.log('===>contexFactory init');
-  
   return {
     prisma: dbInit(),
     pubSub,
