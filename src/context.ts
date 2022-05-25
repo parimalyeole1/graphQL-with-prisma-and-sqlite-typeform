@@ -1,10 +1,6 @@
-
-import { PrismaClient } from "@prisma/client";
-// import { Request } from "express";
-// import { authenticateUser } from "./auth";
 import { pubSub } from "./pubsub";
-
-const prisma = new PrismaClient();
+import { dbInit } from "./database";
+import { PrismaClient } from "@prisma/client";
 
 export type GraphQLContext = {
   prisma: PrismaClient;
@@ -12,8 +8,10 @@ export type GraphQLContext = {
 };
 
 export async function contextFactory(): Promise<GraphQLContext> {
+  console.log('===>contexFactory init');
+  
   return {
-    prisma,
-    pubSub
+    prisma: dbInit(),
+    pubSub,
   };
 }
