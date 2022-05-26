@@ -1,3 +1,5 @@
+<details>
+<summary>Problem Statement</summary>
 This sandbox is a skeleton for a simple GraphQL server application. Please fork this sandbox and build out the functionality described below. Here's a few things to keep in mind:
 
 - The sandbox includes a sample SQLite database. See [here](https://www.sqlitetutorial.net/sqlite-sample-database) for more information about the sample database, including a diagram of the available tables. You should only need to work with the `artists` and `albums` tables.
@@ -10,8 +12,9 @@ Your forked sandbox should implement the following functionality:
 - The ability to query all artists and the albums for each artist
 - The ability to update an artist's name
 - The ability to subscribe to changes to an individual artist
+</details>
 
-## Solution 
+### Solution 
 
 #### Folder structure in porject
 
